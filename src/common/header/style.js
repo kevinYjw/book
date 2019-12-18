@@ -114,3 +114,50 @@ export const BtnItem = styled.div`
         background-color:#ec6149;
     }
 `;
+
+export const SearchInputInfo = styled.div`
+    position:absolute;
+    left:0;
+    top:56px;
+    width:240px;
+    padding:0 20px;
+    box-shadow:0 0 8px rgba(0,0,0,0.2);
+    background-color:#fff;
+`;
+
+export const SearchInputTitle = styled.div`
+    margin-top:20px;
+    margin-bottom:15px;
+    line-height:20px;
+    font-size:14px;
+    color:#969696;
+`;
+
+export const SearchInputSwitch = styled.span`
+    float:right;
+    font-size:13px;
+    cursor:pointer;
+    .spin{
+        display:block;
+        float:left;
+        font-size:12px;
+        margin-right:2px;
+    }
+`;
+
+export const SearchInfoList = styled.div`
+    overflow:hidden;
+`;
+
+export const SearchInfoItem = styled.a`
+    display:block;
+    float:left;
+    line-height:20px;
+    padding:0 5px;
+    margin-bottom:15px;
+    margin-right:10px;
+    font-size:12px;
+    border:1px solid #ddd;
+    color:#787878;
+    border-radius:3px;
+`;

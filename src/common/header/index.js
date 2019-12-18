@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {CSSTransition} from 'react-transition-group';
 import {connect} from 'react-redux';
-import {getInputToggleAction} from './store/actionCreators'
+import {getInputToggleAction,getList} from './store/actionCreators'
 
 //样式组件
 import {
@@ -13,6 +13,11 @@ import {
     SearchInput,
     BtnWrapper,
     BtnItem,
+    SearchInputInfo,
+    SearchInputTitle,
+    SearchInputSwitch,
+    SearchInfoList,
+    SearchInfoItem
 } from './style';
 
 
@@ -31,6 +36,7 @@ class Header extends Component{
                             <SearchInput onFocus={this.props.handleInputFocus} onBlur={this.props.handleInputBlur} className={this.props.focused ? 'focused' : ''}></SearchInput>
                         </CSSTransition>
                         <i className={`iconfont zoom ${this.props.focused ? 'focused' : ''}`}>&#xe614;</i>
+                        {this.getListArea(this.props.focused)}
                    </SearchWrapper>
                </Nav>
                <BtnWrapper>
@@ -40,18 +46,42 @@ class Header extends Component{
             </HeaderWrapper>
         )
     }
+
+    getListArea(type){
+        if(type){
+            return (
+                <SearchInputInfo>
+                    <SearchInputTitle>
+                        热门搜索
+                        <SearchInputSwitch><i className="iconfont spin">&#xe851;</i>换一批</SearchInputSwitch>
+                    </SearchInputTitle>
+                    <SearchInfoList>
+                        {this.props.list.map((item) => {
+                            return (<SearchInfoItem>{item}</SearchInfoItem>);
+                        })}
+                    </SearchInfoList>
+                </SearchInputInfo>
+            );
+        } else {
+            return null;
+        }
+    }
+    
 }
+
 
 const mapStateToProps = (state) => {
     return {
         // focused:state.get('header').get('focused')
-        focused:state.getIn(['header','focused'])
+        focused:state.getIn(['header','focused']),
+        list:state.getIn(['header','list'])
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         handleInputFocus(){
+            dispatch(getList());
             const action = getInputToggleAction(true);
             dispatch(action);
         },
