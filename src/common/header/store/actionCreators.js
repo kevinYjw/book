@@ -1,6 +1,6 @@
-import {SET_FOCUSED,SET_LIST} from './actionType';
+import {SET_FOCUSED,SET_LIST,SET_MOUSEIN,SET_PAGE} from './actionType';
 import axios from 'axios';
-import { fromJS } from 'immutable';
+import {fromJS} from 'immutable';
 
 export const getInputToggleAction = (value) => ({
     type:SET_FOCUSED,
@@ -19,7 +19,18 @@ export const getList = () => {
     }
 }
 
+export const getHandleMouseEnterAction = (value) => ({
+    type:SET_MOUSEIN,
+    value
+})
+
+export const getHandleChangePage = (page) => ({
+    type:SET_PAGE,
+    page
+})
+
 const getListAction = (data) => ({
     type:SET_LIST,
-    data:fromJS(data)
+    data:fromJS(data),
+    totalPage:Math.ceil(data.length / 10)
 })

@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {CSSTransition} from 'react-transition-group';
 import {connect} from 'react-redux';
-import {getInputToggleAction,getList} from './store/actionCreators'
+import {getInputToggleAction,getList,getHandleMouseEnterAction,getHandleChangePage} from './store/actionCreators'
 
 //样式组件
 import {
@@ -33,10 +33,10 @@ class Header extends Component{
                    <NavItem className="right"><i className="iconfont">&#xe636;</i></NavItem>
                    <SearchWrapper>
                         <CSSTransition in={this.props.focused} timeout={200} classNames="slide">
-                            <SearchInput onFocus={this.props.handleInputFocus} onBlur={this.props.handleInputBlur} className={this.props.focused ? 'focused' : ''}></SearchInput>
+                            <SearchInput onFocus={() => this.props.handleInputFocus(this.props.list)} onBlur={this.props.handleInputBlur} className={this.props.focused ? 'focused' : ''}></SearchInput>
                         </CSSTransition>
                         <i className={`iconfont zoom ${this.props.focused ? 'focused' : ''}`}>&#xe614;</i>
-                        {this.getListArea(this.props.focused)}
+                        {this.getListArea()}
                    </SearchWrapper>
                </Nav>
                <BtnWrapper>
@@ -48,17 +48,29 @@ class Header extends Component{
     }
 
     getListArea(type){
-        if(type){
+        let {list,totalPage,page,focused,mouseIn,handleChangePage,handleMouseEnter,handleLeaveEnter} = this.props;
+        if(focused || mouseIn){
+            const newList = list.toJS();
+            const pageList = [];
+
+            if(newList.length > 0){
+                for(let i = (page - 1) * 10; i < page * 10; i++){
+                    pageList.push(
+                        <SearchInfoItem key={newList[i]}>{newList[i]}</SearchInfoItem>
+                    )
+                }
+            }
+
             return (
-                <SearchInputInfo>
+                <SearchInputInfo 
+                    onMouseEnter={handleMouseEnter} 
+                    onMouseLeave={handleLeaveEnter}>
                     <SearchInputTitle>
                         热门搜索
-                        <SearchInputSwitch><i className="iconfont spin">&#xe851;</i>换一批</SearchInputSwitch>
+                        <SearchInputSwitch onClick={() => handleChangePage(page,totalPage)}><i className="iconfont spin">&#xe851;</i>换一批</SearchInputSwitch>
                     </SearchInputTitle>
                     <SearchInfoList>
-                        {this.props.list.map((item) => {
-                            return (<SearchInfoItem>{item}</SearchInfoItem>);
-                        })}
+                        {pageList}
                     </SearchInfoList>
                 </SearchInputInfo>
             );
@@ -74,20 +86,42 @@ const mapStateToProps = (state) => {
     return {
         // focused:state.get('header').get('focused')
         focused:state.getIn(['header','focused']),
-        list:state.getIn(['header','list'])
+        mouseIn:state.getIn(['header','mouseIn']),
+        list:state.getIn(['header','list']),
+        totalPage:state.getIn(['header','totalPage']),
+        page:state.getIn(['header','page']),
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        handleInputFocus(){
-            dispatch(getList());
+        handleInputFocus(list){
+            if(list.size === 0){
+                dispatch(getList());
+            }
             const action = getInputToggleAction(true);
             dispatch(action);
         },
         handleInputBlur(){
             const action = getInputToggleAction(false);
             dispatch(action);
+        },
+        handleMouseEnter(){
+            const action = getHandleMouseEnterAction(true);
+            dispatch(action);
+        },
+        handleLeaveEnter(){
+            const action = getHandleMouseEnterAction(false);
+            dispatch(action);
+        },
+        handleChangePage(page,totalPage){
+            if(page < totalPage){
+                const action = getHandleChangePage(page + 1);
+                dispatch(action);
+            } else {
+                const action = getHandleChangePage(1);
+                dispatch(action);
+            }
         }
     }
 }
